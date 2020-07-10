@@ -96,13 +96,20 @@ class Client:
         self.phone = phone
 
     mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
+    phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
 
     email = property(operator.attrgetter('_email'))
+    phone = property(operator.attrgetter('_phone'))
 
     @email.setter
     def email(self, d):
         if not re.match(self.mailpattern, d):
             print("mailadres not valid!")
+
+    @phone.setter
+    def phone(self, d):
+        if not re.match(self.phonepattern, d):
+            print("phone number invalid!")
 
 class Address:
     def __init__(self, street, houseNumber, zip, city):
@@ -111,7 +118,9 @@ class Address:
         self.zip = zip
         self.city = city
 
-cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom", "+31-6-50601804")
+cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom", "+31-6-5060-1804")
+cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom.com", "+31-6-50601804")
+cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartjegmailpuntcom.com", "+31-6-5060-1804")
 
 
 
