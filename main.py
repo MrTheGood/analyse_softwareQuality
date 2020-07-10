@@ -8,9 +8,10 @@ print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
 
 class FileManager: 
+    
     @staticmethod
     def save(clientData):
-        file = json.dump(clientData, open('save.json', 'w'), default=lambda o: o.__dict__)
+        json.dump(clientData, open('save.json', 'w'), default=lambda o: o.__dict__)
         FileManager.lock_file()
 
     @staticmethod
@@ -85,10 +86,6 @@ class Roles:
     blocked = 5
 
     @staticmethod
-    def allow_login(client):
-        return client.userLevel in [Roles.superAdministrator, Roles.systemAdministrator, Roles.advisor, Roles.client]
-
-    @staticmethod
     def allow_creating_client(client):
         return client.userLevel in [Roles.systemAdministrator]
 
@@ -135,7 +132,8 @@ class Client:
         if not re.match(self.phonepattern, d):
             print("phone number invalid!")
 
-    def validate_password(input):
+    @password.setter
+    def password(self, value):
         lower = "abcdefghijklmnopqrstuvwxyz"
         upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         digits = "0123456789"
@@ -144,95 +142,105 @@ class Client:
 
         containregexpattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]$"
 
-        if len(input) not in range(8, 31):
+        if len(value) not in range(8, 31):
             return False
 
-        if not re.match(containregexpattern, input):
+        if not re.match(containregexpattern, value):
             return False
 
-        for char in input:
+        for char in value:
             if char not in allowed_chars:
                 return False
         return True
 
-    def validate_username(input):
-        input = input.lower()
+    @username.setter
+    def username(self, value):
+        value = value.lower()
 
         lower = "abcdefghijklmnopqrstuvwxyz"
         digits = "0123456789"
         chars = "_-'."
         allowed_chars = lower+digits+chars
 
-        if len(input) not in range(5, 21):
+        if len(value) not in range(5, 21):
             return False
 
-        if not input[0].isalpha():
+        if not value[0].isalpha():
             return False
 
-        for char in input:
+        for char in value:
             if char not in allowed_chars:
                 return False
         return True
 
-    @username.setter
-    def username(self, d):
-        if not self.validate_username(d):
-            print("username invalid!")
-            
-    @password.setter
-    def password(self, d):
-        if not self.validate_password(d):
-            print("username invalid!")
-
 
 
 class Address:
-    def __init__(self, street, houseNumber, zip, city):
+    def __init__(self, street, houseNumber, zipcode, city):
         self.street = street
         self.houseNumber = houseNumber
-        self.zip = zip
+        self.zipcode = zipcode
         self.city = city
     
+    city_whitelist = ["Bronkhorst", "Sint Anna ter Muiden", "Staverden", "Valkenburg", "Madurodam", "Sittard", "Middelburg", "Alkmaar", "Delft", "Dordrecht"]
     zipcodepattern = "[0-9]{4}[a-zA-Z]{2}"
 
-    zipcode = property(operator.attrgetter('_zip'))
+    zipcode = property(operator.attrgetter('_zipcode'))
+    city = property(operator.attrgetter('_city'))
 
     @zipcode.setter
     def zipcode(self, d):
         if not re.match(self.zipcodepattern, d):
-            print("zipcode invalid!")
+            raise ValueError('Zipcode Invalid')
+
+    @city.setter
+    def city(self, d):
+        if not d in self.city_whitelist:
+            raise ValueError('City Invalid')
+            
 
 
 
 
 
 if __name__ == '__main__':
-    notLoggedIn = True
+    isLoggedIn = False
 
     userlevel = Roles.unauthenticated
-    while notLoggedIn:
-        tries = 0
-        if tries >= 3:
+    attempts = 0
+        
+
+
+    FileManager.lock_file()
+
+
+
+
+    clients = FileManager.load()
+    while not isLoggedIn:
+        if attempts >= 3:
             userlevel = Roles.blocked
             print("Blocked out")
+            break
 
         username = input("Fill in username: ")
         password = input("Fill in password: ")
 
         if username == "admin" and password == "geheim":
             print("Succesvol ingelogd")
-            userlevel = 1
-            notLoggedIn = False
+            userlevel = Roles.superAdministrator
+            isLoggedIn = True
         else:
             print("Verkeerde username en/of wachtwoord")
-            tries + 1
+            attempts = attempts + 1
 
-    while not notLoggedIn:
+    while isLoggedIn:
+        print("---")
         print("Execute an action. Options: [quit,...]")
         action = input("action: ")
         if action == "quit":
             print("Logged Out.")
-            break;
+            break
         
         print("Action not recognised. Please try again.")
 

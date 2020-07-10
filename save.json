@@ -1,6 +1,20 @@
 "clients": [
     {
-        "userLevel": 0,
+        "userLevel": 4,
+        "username": "0966770",
+        "password": "Geheim123!",
+        "full_name": "Maarten de Goede",
+        "address": {
+            "street": "Wijnhaven",
+            "houseNumber": 110,
+            "zip": "0000AA",
+            "city": "Rotterdam",
+        },
+        "email": "0966770@hr.nl",
+        "phone": "+31 6 0000 0000",
+    },
+    {
+        "userLevel": 4,
         "full_name": "Kevin Kevinson",
         "address": {
             "street": "voorbeeldstraat",
@@ -12,7 +26,7 @@
         "phone": "+31 6 3289 3892",
     },
     {
-        "userLevel": 5,
+        "userLevel": 4,
         "full_name": "Kevionson's Kevin",
         "address": {
             "street": "voorbeeldstraatsestraat",
