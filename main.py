@@ -1,5 +1,4 @@
 import logging
-import warnings
 logging.basicConfig(filename='log.log',level=logging.DEBUG)
 
 logging.info('It works')
@@ -27,9 +26,8 @@ while notLoggedIn:
         userlevel = 1
         notLoggedIn = False
     else:
-        print("Verkeerde username en/of wachtwoord")
+        logging.warning("Verkeerde username en/of wachtwoord")
         tries + 1
-        warnings.warn("warning")
 
 
 # Client should have the following data:
