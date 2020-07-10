@@ -2,7 +2,7 @@ print("\t**********************************************")
 print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
 
-notloggedIn = true
+notloggedIn = True
 
 while notLoggedIn:
     if tries == 3:
@@ -15,7 +15,7 @@ while notLoggedIn:
 
     if username == "admin" and password == "geheim":
         print("Succesvol ingelogd")
-        notLoggedIn = false
+        notLoggedIn = False
     else:
         tries + 1
 
