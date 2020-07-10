@@ -1,3 +1,8 @@
+import logging
+logging.basicConfig(filename='log.log',level=logging.DEBUG)
+
+logging.info('It works')
+
 print("\t**********************************************")
 print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
@@ -16,6 +21,7 @@ while notLoggedIn:
         print("Succesvol ingelogd")
         notLoggedIn = False
     else:
+        print("Verkeerde username en/of wachtwoord")
         tries + 1
 
 
@@ -30,6 +36,11 @@ while notLoggedIn:
 # password:
 # length: 8..30
 # abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/.
+def ceasar_cipher(input, shift):
+    lower = "abcdefghijklmnopqrstuvwxyz".split('')
+    upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('')
+    digits = "0123456789".split('')
+    chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/.".split('')
 
 
 
