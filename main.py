@@ -2,7 +2,7 @@ print("\t**********************************************")
 print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
 
-notloggedIn = True
+notLoggedIn = True
 
 while notLoggedIn:
     if tries == 3:
