@@ -85,7 +85,6 @@ while notLoggedIn:
 #   - City (should match a city in a list of 10 city names)
 # - Email Adress
 # - Mobile Phone (+31-6-DDDD-DDDD)
-cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom.com.", "+31-6-50601804")
 
 class Client:
     def __init__(self, userLevel, full_name, address, email, phone):
@@ -109,6 +108,7 @@ class Address:
         self.zip = zip
         self.city = city
 
+cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom.com.", "+31-6-50601804")
 
 
 
