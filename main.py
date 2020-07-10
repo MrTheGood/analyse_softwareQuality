@@ -113,6 +113,7 @@ class Client:
     mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
     phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
 
+
     email = property(operator.attrgetter('_email'))
     phone = property(operator.attrgetter('_phone'))
     
@@ -214,14 +215,23 @@ if __name__ == '__main__':
             print("Blocked out")
             break
 
-        username = input("Fill in username: ")
+        username = input("Fill in username/email: ")
         password = input("Fill in password: ")
 
         if username == "admin" and password == "geheim":
             print("Succesvol ingelogd")
             userlevel = Roles.superAdministrator
             isLoggedIn = True
-        else:
+            break
+
+        for client in clients:
+            if username == client.email and password == client.password:
+                print("Succesvol ingelogd")
+                userlevel = client.userLevel
+                isLoggedIn = True
+                break
+
+        if not isLoggedIn:
             print("Verkeerde username en/of wachtwoord")
             attempts = attempts + 1
 
