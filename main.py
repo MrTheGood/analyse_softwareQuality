@@ -95,14 +95,14 @@ class Client:
         self.email = email
         self.phone = phone
 
+    mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
+
     email = property(operator.attrgetter('_email'))
 
     @email.setter
     def email(self, d):
         if not re.match(mailpattern, d):
             print("mailadres not valid!")
-
-    mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
 
 class Address:
     def __init__(self, street, houseNumber, zip, city):
