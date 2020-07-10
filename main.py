@@ -35,12 +35,25 @@ while notLoggedIn:
 
 # password:
 # length: 8..30
-# abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/.
+# abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/
+
+
 def ceasar_cipher(input, shift):
-    lower = "abcdefghijklmnopqrstuvwxyz".split('')
-    upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('')
-    digits = "0123456789".split('')
-    chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/.".split('')
+    lower = "abcdefghijklmnopqrstuvwxyz"
+    upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    digits = "0123456789"
+    chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
+
+    allowed_chars = lower+upper+digits+chars
+
+    cipher = ""
+    for c in input:
+        i = allowed_chars.index(c)
+        cipher = cipher + allowed_chars[(i + shift) % len(allowed_chars)]
+    return cipher
+
+
+print(ceasar_cipher(input("WACHTWOORD:"), 52))
 
 
 
