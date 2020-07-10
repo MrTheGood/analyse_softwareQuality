@@ -30,7 +30,7 @@ while notLoggedIn:
 
 # password:
 # length: 8..30
-# abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0-9 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/.
+# abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/.
 
 
 
