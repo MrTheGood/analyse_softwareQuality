@@ -9,7 +9,7 @@ print("\t**********************************************")
 
 notLoggedIn = True
 
-while notLoggedIn:
+while notLoggedIn and False:
     tries = 0
     if tries == 3:
         print("Blocked out")
@@ -45,6 +45,9 @@ def validate_password(input):
     chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
     allowed_chars = lower+upper+digits+chars
 
+    if len(input) not in range(8, 31):
+        return False
+
     for char in input:
         if char not in allowed_chars:
             return False
@@ -66,7 +69,7 @@ def ceasar_cipher(input, shift):
     return cipher
 
 
-print(ceasar_cipher(input("CIPHER WACHTWOORD:"), 52))
+# print(ceasar_cipher(input("CIPHER WACHTWOORD:"), 52))
 print(validate_password(input("VALIDATION WACHTWOORD:")))
 
 
