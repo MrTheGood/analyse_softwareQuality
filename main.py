@@ -2,25 +2,38 @@ print("\t**********************************************")
 print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
 
-username, password = input("Enter username and password with space in between: ").split()
+notloggedIn = true
 
-print(username)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
-print(password)
+while notLoggedIn:
+    if tries == 3:
+        print("Blocked out")
+
+    username = input("Fill in username: ")
+    password = input("Fill in password: ")
+
+    tries = 0
+
+    if username == "admin" and password == "geheim":
+        print("Succesvol ingelogd")
+        notLoggedIn = false
+    else:
+        tries + 1
+
+
+
+
+
+
+
+
+
+
+# password:
+# length: 8..30
+# abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0-9 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/.
+
+
+
 
 # TODO: C1 Authentication for users are properly implemented.
 # ▪ System must authenticate a user.
