@@ -114,17 +114,23 @@ class Client:
     phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
 
 
-    email = property(operator.attrgetter('_email'))
+    #email = property(operator.attrgetter('_email'))
     phone = property(operator.attrgetter('_phone'))
     
     username = property(operator.attrgetter('_username'))
     password = property(operator.attrgetter('_password'))
 
 
+    @property
+    def email(self):
+        return self._email
+
     @email.setter
     def email(self, d):
         if not re.match(self.mailpattern, d):
             print("mailadres not valid!")
+        else:
+            self._email = d
 
     @phone.setter
     def phone(self, d):
