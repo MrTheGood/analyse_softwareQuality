@@ -1,6 +1,4 @@
-import logging
-import re
-import operator
+import logging, re, operator, json
 logging.basicConfig(filename='log.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 logging.info('It works')
@@ -10,6 +8,37 @@ print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
 
 class FileManager: 
+    @staticmethod
+    def save(clientData):
+        file = json.dump(clientData, open('save.json', 'w'), default=lambda o: o.__dict__)
+        FileManager.lock_file()
+
+    @staticmethod
+    def load():
+        FileManager.unlock_file()
+        data = json.load(open(r'save.json', encoding='UTF-8'))
+
+        clients = []
+        for client in data:
+            for field in client:
+                address = field["address"]
+                clients.append(Client(
+                    field["userLevel"], 
+                    field["username"], 
+                    field["password"], 
+                    field["full_name"], 
+                    Address(
+                        address["street"],
+                        address["houseNumber"],
+                        address["zip"],
+                        address["city"]
+                    ),
+                    field["email"], 
+                    field["phone"]
+                ))
+        FileManager.lock_file()
+        return clients
+            
     @staticmethod
     def lock_file():
         file = open("save.json", "r")
@@ -47,32 +76,165 @@ class FileManager:
         return cipher
 
 
+class Roles:
+    unauthenticated = 0
+    superAdministrator = 1
+    systemAdministrator = 2
+    advisor = 3
+    client = 4
+    blocked = 5
 
-notLoggedIn = True
+    @staticmethod
+    def allow_login(client):
+        return client.userLevel in [Roles.superAdministrator, Roles.systemAdministrator, Roles.advisor, Roles.client]
 
-# 0 = notLoggedIn, 1 = super admininstrator, 2 = system administrator, 3 = advisor, 4 = blocked
-userlevel = 0
+    @staticmethod
+    def allow_creating_client(client):
+        return client.userLevel in [Roles.systemAdministrator]
+
+    @staticmethod
+    def allow_creating_advisor(client):
+        return client.userLevel in [Roles.systemAdministrator]
+
+    @staticmethod
+    def allow_creating_system_admin(client):
+        return client.userLevel in [Roles.superAdministrator]
+
+    @staticmethod
+    def allow_creating_super_admin():
+        return False
+
+
+class Client:
+    def __init__(self, userLevel, username, password, full_name, address, email, phone):
+        self.userLevel = userLevel
+        self.username = username
+        self.password = password
+        self.full_name = full_name
+        self.address = address
+        self.email = email
+        self.phone = phone
+
+    mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
+    phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
+
+    email = property(operator.attrgetter('_email'))
+    phone = property(operator.attrgetter('_phone'))
+    
+    username = property(operator.attrgetter('_username'))
+    password = property(operator.attrgetter('_password'))
+
+
+    @email.setter
+    def email(self, d):
+        if not re.match(self.mailpattern, d):
+            print("mailadres not valid!")
+
+    @phone.setter
+    def phone(self, d):
+        if not re.match(self.phonepattern, d):
+            print("phone number invalid!")
+
+    def validate_password(input):
+        lower = "abcdefghijklmnopqrstuvwxyz"
+        upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        digits = "0123456789"
+        chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
+        allowed_chars = lower+upper+digits+chars
+
+        containregexpattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]$"
+
+        if len(input) not in range(8, 31):
+            return False
+
+        if not re.match(containregexpattern, input):
+            return False
+
+        for char in input:
+            if char not in allowed_chars:
+                return False
+        return True
+
+    def validate_username(input):
+        input = input.lower()
+
+        lower = "abcdefghijklmnopqrstuvwxyz"
+        digits = "0123456789"
+        chars = "_-'."
+        allowed_chars = lower+digits+chars
+
+        if len(input) not in range(5, 21):
+            return False
+
+        if not input[0].isalpha():
+            return False
+
+        for char in input:
+            if char not in allowed_chars:
+                return False
+        return True
+
+    @username.setter
+    def username(self, d):
+        if not self.validate_username(d):
+            print("username invalid!")
+            
+    @password.setter
+    def password(self, d):
+        if not self.validate_password(d):
+            print("username invalid!")
 
 
 
-while notLoggedIn:
-    tries = 0
-    if tries == 3:
-        userlevel = 4
-        print("Blocked out")
+class Address:
+    def __init__(self, street, houseNumber, zip, city):
+        self.street = street
+        self.houseNumber = houseNumber
+        self.zip = zip
+        self.city = city
+    
+    zipcodepattern = "[0-9]{4}[a-zA-Z]{2}"
 
-    username = input("Fill in username: ")
-    password = input("Fill in password: ")
+    zipcode = property(operator.attrgetter('_zip'))
 
-    if username == "admin" and password == "geheim":
-        print("Succesvol ingelogd")
-        userlevel = 1
-        notLoggedIn = False
-        #FileManager.unlock_file()
-    else:
-        print("Verkeerde username en/of wachtwoord")
-        tries + 1
-        #FileManager.lock_file()
+    @zipcode.setter
+    def zipcode(self, d):
+        if not re.match(self.zipcodepattern, d):
+            print("zipcode invalid!")
+
+
+
+
+
+if __name__ == '__main__':
+    notLoggedIn = True
+
+    userlevel = Roles.unauthenticated
+    while notLoggedIn:
+        tries = 0
+        if tries >= 3:
+            userlevel = Roles.blocked
+            print("Blocked out")
+
+        username = input("Fill in username: ")
+        password = input("Fill in password: ")
+
+        if username == "admin" and password == "geheim":
+            print("Succesvol ingelogd")
+            userlevel = 1
+            notLoggedIn = False
+        else:
+            print("Verkeerde username en/of wachtwoord")
+            tries + 1
+
+    while not notLoggedIn:
+        print("Execute an action. Options: [quit,...]")
+        action = input("action: ")
+        if action == "quit":
+            print("Logged Out.")
+            break;
+        
+        print("Action not recognised. Please try again.")
 
 
 
@@ -87,41 +249,6 @@ while notLoggedIn:
 # - Email Adress
 # - Mobile Phone (+31-6-DDDD-DDDD)
 
-class Client:
-    def __init__(self, userLevel, full_name, address, email, phone):
-        self.userLevel = userLevel
-        self.full_name = full_name
-        self.address = address
-        self.email = email
-        self.phone = phone
-
-    mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
-    phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
-
-    email = property(operator.attrgetter('_email'))
-    phone = property(operator.attrgetter('_phone'))
-
-    @email.setter
-    def email(self, d):
-        if not re.match(self.mailpattern, d):
-            print("mailadres not valid!")
-
-    @phone.setter
-    def phone(self, d):
-        if not re.match(self.phonepattern, d):
-            print("phone number invalid!")
-
-class Address:
-    def __init__(self, street, houseNumber, zip, city):
-        self.street = street
-        self.houseNumber = houseNumber
-        self.zip = zip
-        self.city = city
-
-cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom", "+31-6-5060-1804")
-cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom.com", "+31-6-50601804")
-cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartjegmailpuntcom.com", "+31-6-5060-1804")
-
 
 
 
@@ -130,34 +257,6 @@ cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfe
 # abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/
 
 
-def validate_password(input):
-    lower = "abcdefghijklmnopqrstuvwxyz"
-    upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    digits = "0123456789"
-    chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
-    allowed_chars = lower+upper+digits+chars
-
-    if len(input) not in range(8, 31):
-        return False
-
-    for char in input:
-        if char not in allowed_chars:
-            return False
-    return True
-
-def validate_username(input):
-    lower = "abcdefghijklmnopqrstuvwxyz"
-    digits = "0123456789"
-    chars = "_-'."
-    allowed_chars = lower+digits+chars
-
-    if len(input) not in range(5, 21):
-        return False
-
-    for char in input:
-        if char not in allowed_chars:
-            return False
-    return True
 
 
 
