@@ -1,5 +1,6 @@
 import logging
 import re
+import operator
 logging.basicConfig(filename='log.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 logging.info('It works')
@@ -93,6 +94,8 @@ class Client:
         self.address = address
         self.email = email
         self.phone = phone
+
+    email = property(operator.attrgetter('_email'))
 
     @email.setter
     def email(self, d):
