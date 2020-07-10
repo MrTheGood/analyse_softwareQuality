@@ -101,7 +101,7 @@ class Client:
 
     @email.setter
     def email(self, d):
-        if not re.match(mailpattern, d):
+        if not re.match(self.mailpattern, d):
             print("mailadres not valid!")
 
 class Address:
