@@ -5,13 +5,12 @@ print("\t**********************************************")
 notLoggedIn = True
 
 while notLoggedIn:
+    tries = 0
     if tries == 3:
         print("Blocked out")
 
     username = input("Fill in username: ")
     password = input("Fill in password: ")
-
-    tries = 0
 
     if username == "admin" and password == "geheim":
         print("Succesvol ingelogd")
