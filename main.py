@@ -97,7 +97,7 @@ class Client:
 
     @email.setter
     def email(self, d):
-        if  
+        if re.match
 
 class Address:
     def __init__(self, street, houseNumber, zip, city):
