@@ -38,12 +38,25 @@ while notLoggedIn:
 # abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/
 
 
+def validate_password(input):
+    lower = "abcdefghijklmnopqrstuvwxyz"
+    upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    digits = "0123456789"
+    chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
+    allowed_chars = lower+upper+digits+chars
+
+    for char in input:
+        if char not in allowed_chars:
+            return False
+    return True
+
+
+
 def ceasar_cipher(input, shift):
     lower = "abcdefghijklmnopqrstuvwxyz"
     upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     digits = "0123456789"
     chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
-
     allowed_chars = lower+upper+digits+chars
 
     cipher = ""
@@ -53,7 +66,8 @@ def ceasar_cipher(input, shift):
     return cipher
 
 
-print(ceasar_cipher(input("WACHTWOORD:"), 52))
+print(ceasar_cipher(input("CIPHER WACHTWOORD:"), 52))
+print(validate_password(input("VALIDATION WACHTWOORD:")))
 
 
 
