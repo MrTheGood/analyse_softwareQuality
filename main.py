@@ -85,19 +85,28 @@ while notLoggedIn:
 #   - City (should match a city in a list of 10 city names)
 # - Email Adress
 # - Mobile Phone (+31-6-DDDD-DDDD)
-
+cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom.com.", "+31-6-50601804")
 
 class Client:
     def __init__(self, userLevel, full_name, address, email, phone):
         self.userLevel = userLevel
         self.full_name = full_name
-        self.address = Address("", 0, "", "")
+        self.address = address
         self.email = email
         self.phone = phone
 
     @email.setter
     def email(self, d):
-        if re.match
+        if not re.match(mailpattern, d):
+            print("mailadres not valid!")
+
+    mailpattern =   "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+            "\\@" +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+            "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+            ")+"
 
 class Address:
     def __init__(self, street, houseNumber, zip, city):
