@@ -111,7 +111,7 @@ class Address:
         self.zip = zip
         self.city = city
 
-cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom.com.", "+31-6-50601804")
+cleint = Client(0, "nee denk ik", Address("hallostraat", 36, "1234ab", "Winterfell"), "apenstaartje@gmailpuntcom", "+31-6-50601804")
 
 
 
