@@ -1,4 +1,5 @@
 import logging
+import warnings
 logging.basicConfig(filename='log.log',level=logging.DEBUG)
 
 logging.info('It works')
@@ -9,9 +10,13 @@ print("\t**********************************************")
 
 notLoggedIn = True
 
-while notLoggedIn and False:
+# 0 = notLoggedIn, 1 = super admininstrator, 2 = system administrator, 3 = advisor, 4 = blocked
+userlevel = 0
+
+while notLoggedIn:
     tries = 0
     if tries == 3:
+        userlevel = 4
         print("Blocked out")
 
     username = input("Fill in username: ")
@@ -19,13 +24,22 @@ while notLoggedIn and False:
 
     if username == "admin" and password == "geheim":
         print("Succesvol ingelogd")
+        userlevel = 1
         notLoggedIn = False
     else:
         print("Verkeerde username en/of wachtwoord")
         tries + 1
+        warnings.warn("warning")
 
 
-
+# Client should have the following data:
+# - Full Name
+# - Addres 
+#   - Street + House Number
+#   - Zip Code (DDDDXX)
+#   - City (should match a city in a list of 10 city names)
+#  Email Adress
+# Mobile Phone (+31-6-DDDD-DDDD)
 
 
 
@@ -53,6 +67,20 @@ def validate_password(input):
             return False
     return True
 
+def validate_username(input):
+    lower = "abcdefghijklmnopqrstuvwxyz"
+    digits = "0123456789"
+    chars = "_-'."
+    allowed_chars = lower+digits+chars
+
+    if len(input) not in range(5, 21):
+        return False
+
+    for char in input:
+        if char not in allowed_chars:
+            return False
+    return True
+
 
 
 def ceasar_cipher(input, shift):
@@ -69,7 +97,7 @@ def ceasar_cipher(input, shift):
     return cipher
 
 
-# print(ceasar_cipher(input("CIPHER WACHTWOORD:"), 52))
+print(ceasar_cipher(input("CIPHER WACHTWOORD:"), 52))
 print(validate_password(input("VALIDATION WACHTWOORD:")))
 
 
