@@ -1,0 +1,26 @@
+"clients": [
+    {
+        "userLevel": 0,
+        "full_name": "Kevin Kevinson",
+        "address": {
+            "street": "voorbeeldstraat",
+            "houseNumber": 7,
+            "zip": "1234AB",
+            "city": "New Castle",
+        },
+        "email": "example@emailcorp.ing",
+        "phone": "+31 6 3289 3892",
+    },
+    {
+        "userLevel": 5,
+        "full_name": "Kevionson's Kevin",
+        "address": {
+            "street": "voorbeeldstraatsestraat",
+            "houseNumber": 2378,
+            "zip": "3263VW",
+            "city": "The New Castle Of New New Castle",
+        },
+        "email": "example3487@emailcorp.inge",
+        "phone": "+31 6 3289 3892",
+    }
+]

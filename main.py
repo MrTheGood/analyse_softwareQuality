@@ -1,5 +1,6 @@
 import logging
-logging.basicConfig(filename='log.log',level=logging.DEBUG)
+import re
+logging.basicConfig(filename='log.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 logging.info('It works')
 
@@ -7,10 +8,51 @@ print("\t**********************************************")
 print("\t***  Greeter - Hello old and new friends!  ***")
 print("\t**********************************************")
 
+class FileManager: 
+    @staticmethod
+    def lock_file():
+        file = open("save.json", "r")
+        data = file.readlines()
+        file = open("save.json", "w")
+        for line in data:
+            file.write(FileManager.ceasar_cipher(line, 12))
+        file.close()
+
+    @staticmethod
+    def unlock_file():
+        file = open("save.json", "r")
+        data = file.readlines()
+        file = open("save.json", "w")
+        for line in data:
+            file.write(FileManager.ceasar_cipher(line, -12))
+        file.close()
+
+    @staticmethod
+    def ceasar_cipher(input, shift):
+        lower = "abcdefghijklmnopqrstuvwxyz"
+        upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        digits = "0123456789"
+        chars = "~!@\"#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
+        allowed_chars = lower+upper+digits+chars
+
+        cipher = ""
+        for c in input:
+            print("char: '"+c+"'\n")
+            if c == ' ' or c == '\n' or c == '\t' or c == "\r":
+                cipher = cipher + c
+            else: 
+               i = allowed_chars.index(c)
+               cipher = cipher + allowed_chars[(i + shift) % len(allowed_chars)]
+        return cipher
+
+
+
 notLoggedIn = True
 
 # 0 = notLoggedIn, 1 = super admininstrator, 2 = system administrator, 3 = advisor, 4 = blocked
 userlevel = 0
+
+
 
 while notLoggedIn:
     tries = 0
@@ -25,21 +67,44 @@ while notLoggedIn:
         print("Succesvol ingelogd")
         userlevel = 1
         notLoggedIn = False
+        #FileManager.unlock_file()
     else:
-        logging.warning("Verkeerde username en/of wachtwoord")
+        print("Verkeerde username en/of wachtwoord")
         tries + 1
+        #FileManager.lock_file()
 
 
+
+
+# all these validations: 
 # Client should have the following data:
 # - Full Name
 # - Addres 
 #   - Street + House Number
 #   - Zip Code (DDDDXX)
 #   - City (should match a city in a list of 10 city names)
-#  Email Adress
-# Mobile Phone (+31-6-DDDD-DDDD)
+# - Email Adress
+# - Mobile Phone (+31-6-DDDD-DDDD)
 
 
+class Client:
+    def __init__(self, userLevel, full_name, address, email, phone):
+        self.userLevel = userLevel
+        self.full_name = full_name
+        self.address = Address("", 0, "", "")
+        self.email = email
+        self.phone = phone
+
+    @email.setter
+    def email(self, d):
+        if  
+
+class Address:
+    def __init__(self, street, houseNumber, zip, city):
+        self.street = street
+        self.houseNumber = houseNumber
+        self.zip = zip
+        self.city = city
 
 
 
@@ -78,25 +143,6 @@ def validate_username(input):
         if char not in allowed_chars:
             return False
     return True
-
-
-
-def ceasar_cipher(input, shift):
-    lower = "abcdefghijklmnopqrstuvwxyz"
-    upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    digits = "0123456789"
-    chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
-    allowed_chars = lower+upper+digits+chars
-
-    cipher = ""
-    for c in input:
-        i = allowed_chars.index(c)
-        cipher = cipher + allowed_chars[(i + shift) % len(allowed_chars)]
-    return cipher
-
-
-print(ceasar_cipher(input("CIPHER WACHTWOORD:"), 52))
-print(validate_password(input("VALIDATION WACHTWOORD:")))
 
 
 
