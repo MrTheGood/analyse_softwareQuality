@@ -17,26 +17,25 @@ class FileManager:
     @staticmethod
     def load():
         FileManager.unlock_file()
-        data = json.load(open(r'save.json', encoding='UTF-8'))
+        data = json.load(open('save.json', 'r'))
 
         clients = []
         for client in data:
-            for field in client:
-                address = field["address"]
-                clients.append(Client(
-                    field["userLevel"], 
-                    field["username"], 
-                    field["password"], 
-                    field["full_name"], 
-                    Address(
-                        address["street"],
-                        address["houseNumber"],
-                        address["zip"],
-                        address["city"]
-                    ),
-                    field["email"], 
-                    field["phone"]
-                ))
+            address = client["address"]
+            clients.append(Client(
+                client["userLevel"], 
+                client["username"], 
+                client["password"], 
+                client["full_name"], 
+                Address(
+                    address["street"],
+                    address["houseNumber"],
+                    address["zip"],
+                    address["city"]
+                ),
+                client["email"], 
+                client["phone"]
+            ))
         FileManager.lock_file()
         return clients
             
@@ -68,7 +67,6 @@ class FileManager:
 
         cipher = ""
         for c in input:
-            print("char: '"+c+"'\n")
             if c == ' ' or c == '\n' or c == '\t' or c == "\r":
                 cipher = cipher + c
             else: 
@@ -182,7 +180,7 @@ class Address:
         self.zipcode = zipcode
         self.city = city
     
-    city_whitelist = ["Bronkhorst", "Sint Anna ter Muiden", "Staverden", "Valkenburg", "Madurodam", "Sittard", "Middelburg", "Alkmaar", "Delft", "Dordrecht"]
+    city_whitelist = ["Bronkhorst", "Sint Anna ter Muiden", "Staverden", "Valkenburg", "Rotterdam", "Sittard", "Middelburg", "Alkmaar", "Delft", "Dordrecht"]
     zipcodepattern = "[0-9]{4}[a-zA-Z]{2}"
 
     zipcode = property(operator.attrgetter('_zipcode'))
@@ -209,13 +207,6 @@ if __name__ == '__main__':
     userlevel = Roles.unauthenticated
     attempts = 0
         
-
-
-    FileManager.lock_file()
-
-
-
-
     clients = FileManager.load()
     while not isLoggedIn:
         if attempts >= 3:
