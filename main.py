@@ -383,6 +383,8 @@ def create_client(userLevel):
     print("Please select a city from this list (CASE SENSITIVE): ", Validators.validCities)
     city = input("City:")
     if not Validators.isValidCity(city):
+        # Immediately cancels creation of a client if the city is incorrect.
+        # This is because we see the city as system-generated input. 
         return False
 
     clients.append(
