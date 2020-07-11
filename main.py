@@ -62,7 +62,7 @@ class FileManager:
         lower = "abcdefghijklmnopqrstuvwxyz"
         upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         digits = "0123456789"
-        chars = "~!@\"#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
+        chars = r"~!@\"#$%^&*_-+=`|\(){}[]:;'<>,.?/"
         allowed_chars = lower+upper+digits+chars
 
         cipher = ""
@@ -80,12 +80,11 @@ class Roles:
     superAdministrator = 1
     systemAdministrator = 2
     advisor = 3
-    client = 4
-    blocked = 5
+    blocked = 4
 
     @staticmethod
-    def allow_creating_client(client):
-        return client.userLevel in [Roles.systemAdministrator]
+    def allow_login(client):
+        return client.userLevel in [Roles.superAdministrator, Roles.systemAdministrator, Roles.advisor]
 
     @staticmethod
     def allow_creating_advisor(client):
@@ -96,30 +95,31 @@ class Roles:
         return client.userLevel in [Roles.superAdministrator]
 
     @staticmethod
-    def allow_creating_super_admin():
-        return False
+    def allow_reading_log(client):
+        return client.userLevel in [Roles.superAdministrator, Roles.systemAdministrator]
+
 
 class Validators:
     @staticmethod
     def isValidEmail(email):
-        mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
+        mailpattern = r"[a-zA-Z0-9\+\.\_\%\-\+]{1,256}\@[a-zA-Z0-9][a-zA-Z0-9\-]{0,64}(\.[a-zA-Z0-9][a-zA-Z0-9\-]{0,25})+"
         if re.match(mailpattern, email):
-            logger.info("Valid email")
+            logging.info("Valid email")
             return True
         else: 
             print("Invalid email, does not match syntax")
-            logger.info("Invalid email, does not match syntax")
+            logging.info("Invalid email, does not match syntax")
             return False
 
     @staticmethod
     def isValidPhone(phone):
-        phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
+        phonepattern = r"\+31-6-[0-9]{4}-[0-9]{4}"
         if re.match(phonepattern, phone):
-            logger.info("Valid phone number")
+            logging.info("Valid phone number")
             return True
         else: 
             print("Invalid phone number, does not match syntax")
-            logger.info("Invalid phone number, does not match syntax")
+            logging.info("Invalid phone number, does not match syntax")
             return False
 
     @staticmethod
@@ -127,33 +127,33 @@ class Validators:
         lower = "abcdefghijklmnopqrstuvwxyz"
         upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         digits = "0123456789"
-        chars = "~!@#$%^&*_-+=`|\\(){}[]:;'<>,.?/"
+        chars = r"~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/"
         allowed_chars = lower+upper+digits+chars
 
-        containregexpattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]$"
+        containregexpattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]$"
 
-        if len(value) not in range(8, 31):
+        if len(password) not in range(8, 31):
             print("Invalid because password not between 8 and 30 characters")
-            logger.info("Invalid because password not between 8 and 30 characters")
+            logging.info("Invalid because password not between 8 and 30 characters")
             return False
 
-        if not re.match(containregexpattern, value):
+        if not re.match(containregexpattern, password):
             print("Invalid because password does not contain 1 uppercase, 1 lowercase, 1 digit or 1 special character")
-            logger.info("Invalid because password does not contain 1 uppercase, 1 lowercase, 1 digit or 1 special character")
+            logging.info("Invalid because password does not contain 1 uppercase, 1 lowercase, 1 digit or 1 special character")
             return False
 
-        for char in value:
+        for char in password:
             if char not in allowed_chars:
                 print("Invalid because password contains invalid character")
-                logger.info("Invalid because password contains invalid character")
+                logging.info("Invalid because password contains invalid character")
                 return False
-        logger.info("Valid password")
+        logging.info("Valid password")
         return True
 
 
     @staticmethod
     def isValidUsername(username):
-        value = value.lower()
+        value = username.lower()
 
         lower = "abcdefghijklmnopqrstuvwxyz"
         digits = "0123456789"
@@ -162,47 +162,47 @@ class Validators:
 
         if len(value) not in range(5, 21):
             print("Invalid because username not between 5 and 20 characters")
-            logger.info("Invalid because username not between 5 and 20 characters")
+            logging.info("Invalid because username not between 5 and 20 characters")
             return False
 
         if not value[0].isalpha():
             print("Invalid because username does not start with a letter")
-            logger.info("Invalid because username does not start with a letter")
+            logging.info("Invalid because username does not start with a letter")
             return False
 
         for char in value:
             if char not in allowed_chars:
                 print("Invalid because username contains invalid character")
-                logger.info("Invalid because username contains invalid character")
+                logging.info("Invalid because username contains invalid character")
                 return False
-        logger.info("Valid username")
+        logging.info("Valid username")
         return True
         
     @staticmethod
     def isValidClientUserLevel(userLevel):
-        if userLevel in [Roles.systemAdministrator, Roles.advisor, Roles.client]:
-            logger.info("Valid userlevel")
+        if userLevel in [Roles.systemAdministrator, Roles.advisor]:
+            logging.info("Valid userlevel")
             return True
         else:
             print("Invalid userlevel for action")
-            logger.info("Invalid userlevel for action")
+            logging.info("Invalid userlevel for action")
             return False
             
     @staticmethod
     def isValidFullName(fullName):
         if not isinstance(fullName, str):
             print("Please enter your full name")
-            logger.error("Invalid typing on full name")
+            logging.error("Invalid typing on full name")
             return False
             
-        if not len(fullName) in range(1..90):
+        if not len(fullName) in range(1, 90):
             print("Invalid fullname exceeds 90 character limit")
-            logger.info("Invalid fullname exceeds 90 character limit")
+            logging.info("Invalid fullname exceeds 90 character limit")
             return False
             
         if not ' ' in fullName:
             print("Invalid fullname does not contain a space")
-            logger.info("Invalid fullname does not contain a space")
+            logging.info("Invalid fullname does not contain a space")
             return False
         
         logging.info("Valid fullname")    
@@ -212,7 +212,7 @@ class Validators:
     def isValidAddress(address):
         if not isinstance(address, Address):
             print("Please enter your adress")
-            logger.error("Invalid typing on adress")
+            logging.error("Invalid typing on adress")
             return False
         
         logging.info("Valid adress")
@@ -222,12 +222,12 @@ class Validators:
     def isValidStreet(street):
         if not isinstance(street, str):
             print("Please enter your street")
-            logger.error("Invalid typing on street")
+            logging.error("Invalid typing on street")
             return False
             
-        if not len(street) in range(1..120):
+        if not len(street) in range(1, 120):
             print("Invalid street exceeds 90 character limit")
-            logger.info("Invalid street exceeds 90 character limit")
+            logging.info("Invalid street exceeds 90 character limit")
             return False
             
         logging.info("Valid street")
@@ -237,12 +237,12 @@ class Validators:
     def isValidHouseNumber(houseNumber):
         if not isinstance(houseNumber, int):
             print("Please enter your house number")
-            logger.error("Invalid typing on houseNumber")
+            logging.error("Invalid typing on houseNumber")
             return False
             
         if houseNumber < 1:
             print("Invalid house number cannot be lower then 1")
-            logger.info("Invalid house number cannot be lower then 1")
+            logging.info("Invalid house number cannot be lower then 1")
             return False
         
         logging.info("Valid houseNumber")    
@@ -253,7 +253,7 @@ class Validators:
         zipcodePattern = "[0-9]{4}[A-Z]{2}"
         if not re.match(zipcodePattern, zipcode):
             print("Invalid zipcode, does not match syntax")
-            logger.info("Invalid zipcode, does not match syntax")
+            logging.info("Invalid zipcode, does not match syntax")
             return False
         logging.info("Valid zipcode")
         return True
@@ -262,8 +262,8 @@ class Validators:
     @staticmethod
     def isValidCity(city):
         if city not in Validators.validCities:
-            print("Invalid city, please fill in a valid city)
-            logger.info("Invalid city. Does not match with pre defined list")
+            print("Invalid city, please fill in a valid city")
+            logging.info("Invalid city. Does not match with pre defined list")
             return False
         logging.info("Valid city")
         return True
@@ -291,53 +291,89 @@ if __name__ == '__main__':
     isLoggedIn = False
 
     userlevel = Roles.unauthenticated
+    currentClient = None
     attempts = 0
         
     clients = FileManager.load()
     while not isLoggedIn:
         if attempts >= 3:
             userlevel = Roles.blocked
-            print("Blocked out")
+            print("Too many failed login attempts")
+            logging.warn("Too many failed login attempts")
             break
 
         username = input("Fill in username/email: ")
         password = input("Fill in password: ")
 
         if username == "admin" and password == "geheim":
-            print("Succesvol ingelogd")
+            print("Logged in successfull")
+            logging.info("Logged as super administrator")
             userlevel = Roles.superAdministrator
             isLoggedIn = True
             break
 
         for client in clients:
-            if username == client.email and password == client.password:
-                print("Succesvol ingelogd")
-                userlevel = client.userLevel
-                isLoggedIn = True
-                break
+            if username == client.email and password == client.password :
+                if Roles.allow_login(client):
+                    print("Logged in successfull")
+                    userlevel = client.userLevel
+                    currentClient = client
+                    isLoggedIn = True
+                    break
+                else: 
+                    print("You are unauthorized to log in. Please contact a system administrator if you think this is an error.")
+                    logging.warn("Unauthorized user '" + username + "' attempted to log in.")
+                    break
 
         if not isLoggedIn:
-            print("Verkeerde username en/of wachtwoord")
+            print("Wrong username and/or password")
             attempts = attempts + 1
+
 
     while isLoggedIn:
         print("---")
-        print("Execute an action. Options: [quit,...]")
+        print(",...]")
+        availableOptions = "Execute an action. Options: [quit"
+
+        if Roles.allow_creating_advisor(currentClient):
+            availableOptions = availableOptions + ", create_advisor"
+
+        if Roles.allow_creating_system_admin(currentClient):
+            availableOptions = availableOptions + ", create_system_admin"
+
+        if Roles.allow_reading_log(currentClient):
+            availableOptions = availableOptions + ", read_log"
+
+        availableOptions = availableOptions + "]"
+        print(availableOptions)
+            
         action = input("action: ")
         if action == "quit":
             print("Logged Out.")
             break
+
+        if action == "create_advisor":
+            if not Roles.allow_creating_advisor(currentClient):
+                #todo: do
+                continue
+            # todo: do
+            continue
+
+        if action == "create_system_admin":
+            if not Roles.allow_creating_system_admin(currentClient):
+                #todo: do
+                continue
+            # todo: do
+            continue
+
+        if action == "read_log":
+            if not Roles.allow_reading_log(currentClient):
+                #todo: do
+                continue
+            # todo: do
+            continue
         
         print("Action not recognised. Please try again.")
-
-
-
-# TODO: C2 Users access level are implemented.
-# ▪ Distinguish between different categories of users and their access level, as a result of authentication process.
-# ▪ By this we mean for example, a user with advisor level should not be able to see the menu option for adding a new advisor user.
-
-# TODO: C3 All inputs are properly validated.
-# ▪ All inputs, including both use-generated (e.g. client name, email, etc.) inputs and system-generated inputs (e.g. city) must be validated.
 
 # TODO: C4 Invalid inputs are properly handled.
 # ▪ In case of invalid input by user, the system must take appropriate action. For example, it might only display a 
