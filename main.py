@@ -235,12 +235,12 @@ class Validators:
             
     @staticmethod
     def isValidHouseNumber(houseNumber):
-        if not isinstance(houseNumber, int):
+        if houseNumber.isnumeric():
             print("Please enter your house number")
             logging.error("Invalid typing on houseNumber")
             return False
             
-        if houseNumber < 1:
+        if int(houseNumber) < 1:
             print("Invalid house number cannot be lower then 1")
             logging.info("Invalid house number cannot be lower then 1")
             return False
@@ -287,6 +287,21 @@ class Address:
 
 
 
+superAdmin = Client(
+    Roles.superAdministrator,
+    "admin",
+    "admin",
+    "admin admin",
+    Address(
+        "Admin",
+        1,
+        "0000AD",
+        "Rotterdam"
+    ),
+    "admin@admin.admin",
+    "+31-6-0000-0000"
+)
+
 if __name__ == '__main__':
     isLoggedIn = False
 
@@ -305,10 +320,11 @@ if __name__ == '__main__':
         username = input("Fill in username/email: ")
         password = input("Fill in password: ")
 
-        if username == "admin" and password == "geheim":
+        if username == superAdmin.username and password == superAdmin.password:
             print("Logged in successfull")
             logging.info("Logged as super administrator")
             userlevel = Roles.superAdministrator
+            currentClient = superAdmin
             isLoggedIn = True
             break
 
@@ -332,7 +348,6 @@ if __name__ == '__main__':
 
     while isLoggedIn:
         print("---")
-        print(",...]")
         availableOptions = "Execute an action. Options: [quit"
 
         if Roles.allow_creating_advisor(currentClient):
@@ -370,7 +385,10 @@ if __name__ == '__main__':
             if not Roles.allow_reading_log(currentClient):
                 #todo: do
                 continue
-            # todo: do
+
+            file = open("log.log", "r")
+            print(file.read())
+            file.close()
             continue
         
         print("Action not recognised. Please try again.")
