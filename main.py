@@ -26,11 +26,11 @@ class FileManager:
                 client["userLevel"], 
                 client["username"], 
                 client["password"], 
-                client["full_name"], 
+                client["fullName"], 
                 Address(
                     address["street"],
                     address["houseNumber"],
-                    address["zip"],
+                    address["zipcode"],
                     address["city"]
                 ),
                 client["email"], 
@@ -99,46 +99,31 @@ class Roles:
     def allow_creating_super_admin():
         return False
 
+class Validators:
+    @staticmethod
+    def isValidEmail(email):
+        mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
+        if re.match(mailpattern, email):
+            logger.info("Valid email")
+            return True
+        else: 
+            print("Invalid email, does not match syntax")
+            logger.info("Invalid email, does not match syntax")
+            return False
 
-class Client:
-    def __init__(self, userLevel, username, password, full_name, address, email, phone):
-        self.userLevel = userLevel
-        self.username = username
-        self.password = password
-        self.full_name = full_name
-        self.address = address
-        self.email = email
-        self.phone = phone
+    @staticmethod
+    def isValidPhone(phone):
+        phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
+        if re.match(phonepattern, phone):
+            logger.info("Valid phone number")
+            return True
+        else: 
+            print("Invalid phone number, does not match syntax")
+            logger.info("Invalid phone number, does not match syntax")
+            return False
 
-    mailpattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
-    phonepattern = "\+31-6-[0-9]{4}-[0-9]{4}"
-
-
-    #email = property(operator.attrgetter('_email'))
-    phone = property(operator.attrgetter('_phone'))
-    
-    username = property(operator.attrgetter('_username'))
-    password = property(operator.attrgetter('_password'))
-
-
-    @property
-    def email(self):
-        return self._email
-
-    @email.setter
-    def email(self, d):
-        if not re.match(self.mailpattern, d):
-            print("mailadres not valid!")
-        else:
-            self._email = d
-
-    @phone.setter
-    def phone(self, d):
-        if not re.match(self.phonepattern, d):
-            print("phone number invalid!")
-
-    @password.setter
-    def password(self, value):
+    @staticmethod
+    def isValidPassword(password):
         lower = "abcdefghijklmnopqrstuvwxyz"
         upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         digits = "0123456789"
@@ -148,18 +133,26 @@ class Client:
         containregexpattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]$"
 
         if len(value) not in range(8, 31):
+            print("Invalid because password not between 8 and 30 characters")
+            logger.info("Invalid because password not between 8 and 30 characters")
             return False
 
         if not re.match(containregexpattern, value):
+            print("Invalid because password does not contain 1 uppercase, 1 lowercase, 1 digit or 1 special character")
+            logger.info("Invalid because password does not contain 1 uppercase, 1 lowercase, 1 digit or 1 special character")
             return False
 
         for char in value:
             if char not in allowed_chars:
+                print("Invalid because password contains invalid character")
+                logger.info("Invalid because password contains invalid character")
                 return False
+        logger.info("Valid password")
         return True
 
-    @username.setter
-    def username(self, value):
+
+    @staticmethod
+    def isValidUsername(username):
         value = value.lower()
 
         lower = "abcdefghijklmnopqrstuvwxyz"
@@ -168,17 +161,122 @@ class Client:
         allowed_chars = lower+digits+chars
 
         if len(value) not in range(5, 21):
+            print("Invalid because username not between 5 and 20 characters")
+            logger.info("Invalid because username not between 5 and 20 characters")
             return False
 
         if not value[0].isalpha():
+            print("Invalid because username does not start with a letter")
+            logger.info("Invalid because username does not start with a letter")
             return False
 
         for char in value:
             if char not in allowed_chars:
+                print("Invalid because username contains invalid character")
+                logger.info("Invalid because username contains invalid character")
                 return False
+        logger.info("Valid username")
+        return True
+        
+    @staticmethod
+    def isValidClientUserLevel(userLevel):
+        if userLevel in [Roles.systemAdministrator, Roles.advisor, Roles.client]:
+            logger.info("Valid userlevel")
+            return True
+        else:
+            print("Invalid userlevel for action")
+            logger.info("Invalid userlevel for action")
+            return False
+            
+    @staticmethod
+    def isValidFullName(fullName):
+        if not isinstance(fullName, str):
+            print("Please enter your full name")
+            logger.error("Invalid typing on full name")
+            return False
+            
+        if not len(fullName) in range(1..90):
+            print("Invalid fullname exceeds 90 character limit")
+            logger.info("Invalid fullname exceeds 90 character limit")
+            return False
+            
+        if not ' ' in fullName:
+            print("Invalid fullname does not contain a space")
+            logger.info("Invalid fullname does not contain a space")
+            return False
+        
+        logging.info("Valid fullname")    
+        return True
+        
+    @staticmethod
+    def isValidAddress(address):
+        if not isinstance(address, Address):
+            print("Please enter your adress")
+            logger.error("Invalid typing on adress")
+            return False
+        
+        logging.info("Valid adress")
+        return True
+            
+    @staticmethod
+    def isValidStreet(street):
+        if not isinstance(street, str):
+            print("Please enter your street")
+            logger.error("Invalid typing on street")
+            return False
+            
+        if not len(street) in range(1..120):
+            print("Invalid street exceeds 90 character limit")
+            logger.info("Invalid street exceeds 90 character limit")
+            return False
+            
+        logging.info("Valid street")
+        return True
+            
+    @staticmethod
+    def isValidHouseNumber(houseNumber):
+        if not isinstance(houseNumber, int):
+            print("Please enter your house number")
+            logger.error("Invalid typing on houseNumber")
+            return False
+            
+        if houseNumber < 1:
+            print("Invalid house number cannot be lower then 1")
+            logger.info("Invalid house number cannot be lower then 1")
+            return False
+        
+        logging.info("Valid houseNumber")    
         return True
 
+    @staticmethod
+    def isValidZipcode(zipcode):
+        zipcodePattern = "[0-9]{4}[A-Z]{2}"
+        if not re.match(zipcodePattern, zipcode):
+            print("Invalid zipcode, does not match syntax")
+            logger.info("Invalid zipcode, does not match syntax")
+            return False
+        logging.info("Valid zipcode")
+        return True
 
+    validCities = ["Bronkhorst", "Sint Anna ter Muiden", "Staverden", "Valkenburg", "Rotterdam", "Sittard", "Middelburg", "Alkmaar", "Delft", "Dordrecht"]
+    @staticmethod
+    def isValidCity(city):
+        if city not in Validators.validCities:
+            print("Invalid city, please fill in a valid city)
+            logger.info("Invalid city. Does not match with pre defined list")
+            return False
+        logging.info("Valid city")
+        return True
+
+class Client:
+    def __init__(self, userLevel, username, password, fullName, address, email, phone):
+        self.userLevel = userLevel
+        self.username = username
+        self.password = password
+        self.fullName = fullName
+        self.address = address
+        self.email = email
+        self.phone = phone
 
 class Address:
     def __init__(self, street, houseNumber, zipcode, city):
@@ -186,25 +284,6 @@ class Address:
         self.houseNumber = houseNumber
         self.zipcode = zipcode
         self.city = city
-    
-    city_whitelist = ["Bronkhorst", "Sint Anna ter Muiden", "Staverden", "Valkenburg", "Rotterdam", "Sittard", "Middelburg", "Alkmaar", "Delft", "Dordrecht"]
-    zipcodepattern = "[0-9]{4}[a-zA-Z]{2}"
-
-    zipcode = property(operator.attrgetter('_zipcode'))
-    city = property(operator.attrgetter('_city'))
-
-    @zipcode.setter
-    def zipcode(self, d):
-        if not re.match(self.zipcodepattern, d):
-            raise ValueError('Zipcode Invalid')
-
-    @city.setter
-    def city(self, d):
-        if not d in self.city_whitelist:
-            raise ValueError('City Invalid')
-            
-
-
 
 
 
@@ -252,36 +331,6 @@ if __name__ == '__main__':
         print("Action not recognised. Please try again.")
 
 
-
-
-# all these validations: 
-# Client should have the following data:
-# - Full Name
-# - Addres 
-#   - Street + House Number
-#   - Zip Code (DDDDXX)
-#   - City (should match a city in a list of 10 city names)
-# - Email Adress
-# - Mobile Phone (+31-6-DDDD-DDDD)
-
-
-
-
-# password:
-# length: 8..30
-# abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ~!@#$%^&*_-+=`|\(){}[]:;'<>,.?/
-
-
-
-
-
-
-# TODO: C1 Authentication for users are properly implemented.
-# ▪ System must authenticate a user.
-# ▪ Usernames and passwords can be stored in a local file, using a simple encryption method of your choice, such 
-# as Caesar sipher. The only security measure on username and password file is that the file should not be readable 
-# in text mode by a text editor. You do not need to implement complex mechanism, but you are free to choose 
-# your own option. As long as, the file is not readable by a text editor, the criterion is assessed as satisfactory.
 
 # TODO: C2 Users access level are implemented.
 # ▪ Distinguish between different categories of users and their access level, as a result of authentication process.
